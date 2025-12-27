@@ -1,0 +1,41 @@
+*** Begin Patch
+*** Update File: app/build.gradle
+@@
+     kotlinOptions {
+         jvmTarget = "1.8"
+     }
+ 
++    // --- SIGNING CONFIGURATION (reads from gradle.properties or env-created file) ---
++    signingConfigs {
++        release {
++            // KEYSTORE_FILE, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD should be provided
++            // via gradle.properties (created by CI) or in ~/.gradle/gradle.properties locally.
++            def store = project.findProperty("KEYSTORE_FILE") ?: "keystore.jks"
++            storeFile file(store)
++            storePassword project.findProperty("KEYSTORE_PASSWORD") ?: ""
++            keyAlias project.findProperty("KEY_ALIAS") ?: ""
++            keyPassword project.findProperty("KEY_PASSWORD") ?: ""
++        }
++    }
+ 
+     buildTypes {
+-        release {
+-            signingConfig signingConfigs.release
+-            minifyEnabled false
+-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+-        }
++        release {
++            // Use the signing config above for release builds
++            signingConfig signingConfigs.release
++
++            // Adjust minify/ProGuard as needed
++            minifyEnabled false
++            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
++        }
+         debug {
+             // Optional: use debug signing (default) or the same release key for local testing
+             applicationIdSuffix ".debug"
+             versionNameSuffix "-debug"
+         }
+     }
+*** End Patch
